@@ -6,8 +6,8 @@
 
 # Which feed list to read from the PRIVATE feeds repo.
 # Must match a file there: app_name "news" -> reads news.json
-app_name: "APP_NAME"
-feed_title: "APP TITLE"
+app_name: "youtube"
+feed_title: "youtube"
 
 # ---- Output ----
 output_html: false          # false = clean text (AI-rewritten/stripped)
@@ -17,8 +17,8 @@ max_output_items: 10000
 retention_days: 365
 
 # ---- This app's own Pages URL ----
-site_title: "My RSS Feed"
-site_base_url: "https://USERNAME.github.io/app-APPNAME"
+site_title: "youtube"
+site_base_url: "https://mtblq.github.io/app-youtube"
 
 # ---- Fetching ----
 fetch_workers: 12
@@ -27,7 +27,7 @@ fetch_retries: 2
 
 # ---- AI rewrite / translation ----
 translate_enabled: true
-openai_model: "chatgpt-4o-latest"
+openai_model: "gpt-5.4-mini"
 openai_base_url: "https://api.openai.com/v1"
 target_language: "English"
 rewrites_per_run: 1000
