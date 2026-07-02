@@ -1,0 +1,44 @@
+# =====================================================================
+#  App config — ONE application per repo.
+#  Edit these, commit, and the next scheduled run uses them.
+#  Your OpenAI key is NOT here — it's the GitHub Secret OPENAI_API_KEY.
+# =====================================================================
+
+# Which feed list to read from the PRIVATE feeds repo.
+# Must match a file there: app_name "news" -> reads news.json
+app_name: "APP_NAME"
+feed_title: "APP TITLE"
+
+# ---- Output ----
+output_html: false          # false = clean text (AI-rewritten/stripped)
+                            # true  = keep the source's original HTML
+                            #         (only the title is AI-translated)
+max_output_items: 10000
+retention_days: 365
+
+# ---- This app's own Pages URL ----
+site_title: "My RSS Feed"
+site_base_url: "https://USERNAME.github.io/app-APPNAME"
+
+# ---- Fetching ----
+fetch_workers: 12
+fetch_timeout: 30
+fetch_retries: 2
+
+# ---- AI rewrite / translation ----
+translate_enabled: true
+openai_model: "chatgpt-4o-latest"
+openai_base_url: "https://api.openai.com/v1"
+target_language: "English"
+rewrites_per_run: 1000
+translate_batch_size: 10
+translate_workers: 6
+translate_timeout: 90
+translate_max_retries: 2
+
+# The instruction this app's AI follows. Each app can differ.
+rewrite_prompt: |
+  You are rewriting RSS feed items. If the text is not in English,
+  translate it into English first, then rewrite the title and
+  description to read clearly and naturally. Preserve names and
+  key terminology. Keep the meaning faithful; do not invent facts.

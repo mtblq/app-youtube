@@ -1,0 +1,89 @@
+name: Aggregate feed
+
+on:
+  schedule:
+    # >>> EDIT THIS CRON for this app's own schedule (UTC) <<<
+    - cron: "0 */3 * * *"
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths: ["aggregate.py", "config.yml", ".github/workflows/aggregate.yml"]
+
+concurrency:
+  group: aggregate
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+env:
+  # >>> EDIT THESE TWO for this app <<<
+  APP_NAME: "APP_NAME"                                  # which feed file to read
+  PRIVATE_FEEDS_REPO: "USERNAME/cycling-rss-feeds"      # the private feeds repo
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout private feed list
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.PRIVATE_FEEDS_REPO }}
+          token: ${{ secrets.FEEDS_TOKEN }}
+          path: private-feeds
+
+      - name: Stage this app's feed list
+        run: |
+          mkdir -p feeds
+          cp "private-feeds/${APP_NAME}.json" "feeds/${APP_NAME}.json"
+          echo "Staged feeds/${APP_NAME}.json"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Run aggregator
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          APP_NAME: ${{ env.APP_NAME }}
+        run: python aggregate.py
+
+      - name: Validate feed
+        run: python -c "import xml.dom.minidom as m; m.parse('public/feed.xml'); print('feed.xml OK')"
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Commit archive
+        continue-on-error: true
+        run: |
+          git config user.name "rss-bot"
+          git config user.email "rss-bot@users.noreply.github.com"
+          git add data public
+          if git diff --cached --quiet; then
+            echo "No changes."
+          else
+            git commit -m "Update ($(date -u '+%Y-%m-%d %H:%M UTC'))"
+            for i in 1 2 3 4 5; do
+              git pull --rebase --autostash origin main && git push && break
+              echo "retry $i"; sleep 5
+            done
+          fi
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
