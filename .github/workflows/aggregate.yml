@@ -20,7 +20,7 @@ permissions:
 
 env:
   # >>> EDIT THESE TWO for this app <<<
-  APP_NAME: "app-youtube"                                  # which feed file to read
+  APP_NAME: "youtube"                                  # which feed file to read
   PRIVATE_FEEDS_REPO: "mtblq/cycling-rss-feeds"      # the private feeds repo
 
 jobs:
