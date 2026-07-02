@@ -3,7 +3,7 @@ name: Aggregate feed
 on:
   schedule:
     # >>> EDIT THIS CRON for this app's own schedule (UTC) <<<
-    - cron: "0 */3 * * *"
+    - cron: "0 */2 * * *"
   workflow_dispatch: {}
   push:
     branches: [main]
@@ -20,8 +20,8 @@ permissions:
 
 env:
   # >>> EDIT THESE TWO for this app <<<
-  APP_NAME: "APP_NAME"                                  # which feed file to read
-  PRIVATE_FEEDS_REPO: "USERNAME/cycling-rss-feeds"      # the private feeds repo
+  APP_NAME: "app-youtube"                                  # which feed file to read
+  PRIVATE_FEEDS_REPO: "mtblq/cycling-rss-feeds"      # the private feeds repo
 
 jobs:
   build:
